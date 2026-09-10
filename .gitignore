@@ -1,0 +1,23 @@
+# Training data and generated artifacts
+/data/
+/pretrained/
+/runs/
+
+# Model checkpoints
+*.pt
+*.pth
+*.onnx
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
