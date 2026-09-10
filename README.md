@@ -18,6 +18,8 @@
 
 模型严格保留 MoveNet 公开的四头设计，没有额外的中心偏移或检测框分支。车位中心只用于在整数热图位置读取关键点回归场；外接框直接由四个最终角点计算。
 
+![MoveNet 网络结构](data/MoveNetArchitecture.png)
+
 ## 安装
 
 推荐 Python 3.10 或更高版本：
@@ -99,6 +101,8 @@ python infer.py `
 `--input` 支持单张图片或图片目录。输出包含泊车位四边形、四个编号角点、车位中心及置信度。
 
 ## MoveNet Step 3 解码
+
+![MoveNet 后处理流程](data/MoveNetPostProcessing.png)
 
 直接取角点热图最大值容易关联到相邻车位。本项目使用中心回归得到的粗角点对相应热图做距离加权：
 
