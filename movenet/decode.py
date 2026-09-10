@@ -20,8 +20,9 @@ def decode_multipose(outputs: dict[str, torch.Tensor], max_people: int = 6,
         for score, ind in zip(scores, inds):
             if score < center_threshold: continue
             iy, ix = int(ind // w), int(ind % w)
-            co = outputs["center_offset"][b, :, iy, ix]
-            cy, cx = iy + co[0], ix + co[1]
+            # Original MoveNet four-head design: the center is only an
+            # integer heatmap index used to sample the regression field.
+            cy, cx = float(iy), float(ix)
             reg = outputs["keypoint_regression"][b, :, iy, ix].view(num_keypoints, 2)
             offsets = outputs["keypoint_offset"][b].view(num_keypoints, 2, h, w)
             points = []
@@ -45,9 +46,9 @@ def decode_multipose(outputs: dict[str, torch.Tensor], max_people: int = 6,
                 ks = khm[b,k,qy,qx]
                 oy, ox = offsets[k,:,qy,qx]
                 points.append([(qx + float(ox))*stride, (qy + float(oy))*stride, float(ks)])
-            bh, bw = outputs["box_size"][b,:,iy,ix].clamp(min=0)
-            box = [(cx-bw/2).item()*stride, (cy-bh/2).item()*stride,
-                   (cx+bw/2).item()*stride, (cy+bh/2).item()*stride]
+            xy = torch.tensor([[p[0], p[1]] for p in points])
+            box = [float(xy[:,0].min()), float(xy[:,1].min()),
+                   float(xy[:,0].max()), float(xy[:,1].max())]
             persons.append({"score":float(score), "box":box, "keypoints":points})
         results.append(persons)
     return results

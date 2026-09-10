@@ -52,8 +52,6 @@ class MoveNetMultiPose(nn.Module):
             ("keypoint_regression", Head(fpn_channels, num_keypoints * 2)),
             ("keypoint_heatmap", Head(fpn_channels, num_keypoints, -2.19)),
             ("keypoint_offset", Head(fpn_channels, num_keypoints * 2)),
-            ("center_offset", Head(fpn_channels, 2)),
-            ("box_size", Head(fpn_channels, 2)),
         ]))
 
     def _load_local_backbone(self, path: str | Path) -> None:

@@ -7,4 +7,4 @@ python train.py ^
   --batch-size 10 ^
   --epochs 30 ^
   --pretrained-path pretrained ^
-  --output runs\parking_pretrained_fp32
+  --output runs\parking_four_heads_pretrained_e30_fp32

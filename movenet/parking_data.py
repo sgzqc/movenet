@@ -67,8 +67,6 @@ class ParkingSpaces(Dataset):
             "center_heatmap":np.zeros((1,out,out),np.float32),
             "keypoint_heatmap":np.zeros((nk,out,out),np.float32),
             "keypoint_regression":np.zeros((self.max_spaces,nk*2),np.float32),
-            "center_offset":np.zeros((self.max_spaces,2),np.float32),
-            "box_size":np.zeros((self.max_spaces,2),np.float32),
             "indices":np.zeros(self.max_spaces,np.int64),
             "person_mask":np.zeros(self.max_spaces,np.float32),
             "keypoint_mask":np.zeros((self.max_spaces,nk),np.float32),
@@ -91,8 +89,6 @@ class ParkingSpaces(Dataset):
             _draw_gaussian(r["center_heatmap"][0], tuple(ci), radius)
             r["indices"][slot] = ci[1]*out + ci[0]
             r["person_mask"][slot] = 1
-            r["center_offset"][slot] = center[::-1] - ci[::-1]
-            r["box_size"][slot] = [bh, bw]
             for k in range(nk):
                 pi = np.floor(p[k]).astype(np.int64)
                 if not (0 <= pi[0] < out and 0 <= pi[1] < out): continue

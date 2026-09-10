@@ -11,8 +11,7 @@ def main():
     y = model(x); o = 32; n = 3
     batch = {
         "center_heatmap":torch.zeros(2,1,o,o), "keypoint_heatmap":torch.zeros(2,17,o,o),
-        "keypoint_regression":torch.zeros(2,n,34), "center_offset":torch.zeros(2,n,2),
-        "box_size":torch.zeros(2,n,2), "indices":torch.zeros(2,n,dtype=torch.long),
+        "keypoint_regression":torch.zeros(2,n,34), "indices":torch.zeros(2,n,dtype=torch.long),
         "person_mask":torch.zeros(2,n), "keypoint_mask":torch.zeros(2,n,17),
         "keypoint_offset":torch.zeros(2,17,2,o,o), "keypoint_offset_mask":torch.zeros(2,17,o,o),
     }
@@ -24,4 +23,3 @@ def main():
 
 
 if __name__ == "__main__": main()
-

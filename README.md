@@ -13,12 +13,10 @@
       ├─ 车位中心热图       1 channel
       ├─ 中心到四角点回归   8 channels
       ├─ 四类角点热图       4 channels
-      ├─ 四角点局部偏移     8 channels
-      ├─ 中心局部偏移       2 channels
-      └─ 车位框高宽         2 channels
+      └─ 四角点局部偏移     8 channels
 ```
 
-前四个分支对应 MoveNet 的中心、关键点回归、关键点热图和局部偏移思想；中心偏移与车位框分支用于多实例定位。
+模型严格保留 MoveNet 公开的四头设计，没有额外的中心偏移或检测框分支。车位中心只用于在整数热图位置读取关键点回归场；外接框直接由四个最终角点计算。
 
 ## 安装
 
@@ -68,7 +66,7 @@ python train.py `
   --workers 0 `
   --epochs 30 `
   --pretrained-path pretrained `
-  --output runs\parking_pretrained_repeat100_e30_fp32
+  --output runs\parking_four_heads_pretrained_e30_fp32
 ```
 
 `--repeat` 只做逻辑重复，不复制文件。训练默认使用 FP32；显式传入 `--amp` 才会启用 CUDA 混合精度。
@@ -84,14 +82,14 @@ log.txt    # 配置、学习率、总 loss 与各分支 loss
 断点续训：
 
 ```powershell
-python train.py [其他参数] --resume runs\parking_pretrained_repeat100_e30_fp32\last.pt
+python train.py [其他参数] --resume runs\parking_four_heads_pretrained_e30_fp32\last.pt
 ```
 
 ## 推理与可视化
 
 ```powershell
 python infer.py `
-  --checkpoint runs\parking_pretrained_repeat100_e30_fp32\best.pt `
+  --checkpoint runs\parking_four_heads_pretrained_e30_fp32\best.pt `
   --input data\training\result_down_2300.jpg `
   --output runs\parking_visualization `
   --threshold 0.8 `
@@ -109,6 +107,31 @@ weighted_heatmap(p) = heatmap(p) × exp(-distance(p, regressed_point)² / (2σ²
 ```
 
 再从加权热图取峰值并叠加局部 offset。默认参数为 `--search-radius 20` 和 `--distance-sigma 6`，单位是 stride-4 输出特征图网格。正式使用时应根据独立验证集调整。
+
+## 精度评估
+
+评估脚本按预测中心与标注中心进行一对一匹配，并统计角点像素误差、PCK 和按车位框对角线归一化的 NME：
+
+```powershell
+python evaluate.py `
+  --checkpoint runs\parking_four_heads_pretrained_e30_fp32\best.pt `
+  --data data\training `
+  --threshold 0.8 `
+  --max-spaces 6
+```
+
+当前单张训练样本重复 100 次、训练 30 个 epoch 后的训练集结果：
+
+```text
+预测/标注/匹配车位：6 / 6 / 6
+角点平均误差：      0.393 px
+角点中位误差：      0.371 px
+角点最大误差：      0.619 px
+PCK@2/5/10/20px：   100%
+NME（框对角线）：   0.0925%
+```
+
+以上数字只验证模型能够正确过拟合训练样本，不代表未知图片上的泛化精度。
 
 ## COCO 人体关键点模式
 

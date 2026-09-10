@@ -28,17 +28,15 @@ def masked_l1(pred: torch.Tensor, target: torch.Tensor, mask: torch.Tensor) -> t
 
 
 def multipose_loss(outputs, batch, weights=None):
-    weights = weights or {"center":1., "kpt_hm":1., "kpt_reg":1., "kpt_off":1., "center_off":1., "box":.1}
+    weights = weights or {"center":1., "kpt_hm":1., "kpt_reg":1., "kpt_off":1.}
     center = focal_loss(outputs["center_heatmap"], batch["center_heatmap"])
     kpt_hm = focal_loss(outputs["keypoint_heatmap"], batch["keypoint_heatmap"])
     idx, pmask = batch["indices"], batch["person_mask"]
     num_keypoints = outputs["keypoint_heatmap"].shape[1]
     kreg = _gather(outputs["keypoint_regression"], idx).view(*idx.shape, num_keypoints, 2)
     kpt_reg = masked_l1(kreg, batch["keypoint_regression"].view(*idx.shape,num_keypoints,2), batch["keypoint_mask"])
-    center_off = masked_l1(_gather(outputs["center_offset"], idx), batch["center_offset"], pmask)
-    box = masked_l1(_gather(outputs["box_size"], idx), batch["box_size"], pmask)
     off = outputs["keypoint_offset"].view(outputs["keypoint_offset"].shape[0],num_keypoints,2,*outputs["keypoint_offset"].shape[-2:])
     kpt_off = masked_l1(off, batch["keypoint_offset"], batch["keypoint_offset_mask"].unsqueeze(2))
     parts = {"center":center, "kpt_hm":kpt_hm, "kpt_reg":kpt_reg,
-             "kpt_off":kpt_off, "center_off":center_off, "box":box}
+             "kpt_off":kpt_off}
     return sum(weights[k] * v for k, v in parts.items()), parts

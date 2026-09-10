@@ -77,8 +77,6 @@ class CocoKeypoints(Dataset):
             "center_heatmap": np.zeros((1, out, out), np.float32),
             "keypoint_heatmap": np.zeros((17, out, out), np.float32),
             "keypoint_regression": np.zeros((self.max_people, 34), np.float32),
-            "center_offset": np.zeros((self.max_people, 2), np.float32),
-            "box_size": np.zeros((self.max_people, 2), np.float32),
             "indices": np.zeros(self.max_people, np.int64),
             "person_mask": np.zeros(self.max_people, np.float32),
             "keypoint_mask": np.zeros((self.max_people, 17), np.float32),
@@ -111,8 +109,6 @@ class CocoKeypoints(Dataset):
             _draw_gaussian(result["center_heatmap"][0], tuple(ci), radius)
             result["indices"][n] = ci[1] * out + ci[0]
             result["person_mask"][n] = 1
-            result["center_offset"][n] = center[::-1] - ci[::-1]  # y,x
-            result["box_size"][n] = [h / s, w / s]
             for k in range(17):
                 if not visible[k]: continue
                 p = kp[k, :2] / s
