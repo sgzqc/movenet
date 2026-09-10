@@ -137,4 +137,4 @@ python smoke_test.py
 - 同一张图片重复多次只能验证模型过拟合，不能增加数据多样性。
 - 正式训练应增加不同泊车场、视角、光照和车位形状的样本。
 - 当前 `best.pt` 按训练 loss 选择；正式项目应增加独立验证集。
-- `data/`、`pretrained/`、`runs/`、`.pt` 与 `.pth` 均被 `.gitignore` 排除。
+- 示例 `data/` 会提交到仓库；`pretrained/`、`runs/`、`.pt` 与 `.pth` 被 `.gitignore` 排除。

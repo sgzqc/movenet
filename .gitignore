@@ -1,5 +1,4 @@
 # Training data and generated artifacts
-/data/
 /pretrained/
 /runs/
 
@@ -20,4 +19,3 @@ venv/
 .vscode/
 .DS_Store
 Thumbs.db
-
