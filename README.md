@@ -18,7 +18,7 @@
 
 模型严格保留 MoveNet 公开的四头设计，没有额外的中心偏移或检测框分支。车位中心只用于在整数热图位置读取关键点回归场；外接框直接由四个最终角点计算。
 
-![MoveNet 网络结构](data/MoveNetArchitecture.png)
+![MoveNet 网络结构]([data/MoveNetArchitecture.png](https://github.com/sgzqc/movenet/blob/main/data/MoveNetArchitecture.png))
 
 ## 安装
 
